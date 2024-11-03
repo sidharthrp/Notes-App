@@ -1,14 +1,23 @@
 import Header from "@/components/header";
 import CreateNote from "@/components/createNote";
-import Image from "next/image";
 import SavedNotes from "@/components/savedNotes";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+// This is a server component by default in the App Router
+export default async function Home() {
+  // Fetch data from your Supabase table
+  const { data, error } = await supabase.from('Notes').select('*');
+
+  if (error) {
+    console.error('Error fetching data:', error);
+    return <div>Error loading data</div>;
+  }
+
   return (
-    <div >
-      <Header></Header>
+    <div>
+      <Header />
       <CreateNote />
-      <SavedNotes />
+      <SavedNotes data={data || []} /> {/* Pass the fetched data as props */}
     </div>
   );
 }
